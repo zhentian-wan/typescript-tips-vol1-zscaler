@@ -7,90 +7,196 @@ import { github, vsDark } from "@code-surfer/themes";
 
 export const theme = vsDark;
 
-# Hello 👋
+# Typescript tips Vol.1 💡
 
-You are using [MDX Deck](https://github.com/jxnblk/mdx-deck) and [Code Surfer](https://codesurfer.pomb.us)
+Zhentian Wan @ Zscaler
+
+---
+
+## Tip 1: You might not need Enum
+
+[You may not need an enum when an object with as const could suffice](https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums)
+
+---
+
+### #Enum usage is not predictable
 
 ---
 
 <CodeSurfer>
 
-```js title="This is a title" subtitle="and this a subtitle"
-function lorem(ipsum, dolor = 1) {
-  const sit = ipsum == null ? 0 : ipsum.sit;
-  dolor = sit - amet(dolor);
-  return sit
-    ? consectetur(ipsum, 0, dolor < 0 ? 0 : dolor)
-    : [];
-}
-
-function incididunt(ipsum, ut = 1) {
-  ut = labore.et(amet(ut), 0);
-  const sit = ipsum == null ? 0 : ipsum.sit;
-
-  if (!sit || ut < 1) {
-    return [];
-  }
-
-  let dolore = 0;
-  let magna = 0;
-  const aliqua = new eiusmod(labore.ut(sit / ut));
-
-  while (dolore < sit) {
-    aliqua[magna++] = consectetur(
-      ipsum,
-      dolore,
-      (dolore += ut)
-    );
-  }
-
-  return aliqua;
+```ts
+enum COLORS {
+  RED, // 0
+  BLUE, // 1
+  GREEN, // 2
 }
 ```
 
-```js
-function lorem(ipsum, dolor = 1) {
-  const sit = ipsum == null ? 0 : ipsum.sit;
-  dolor = sit - amet(dolor);
-  return sit
-    ? consectetur(ipsum, 0, dolor < 0 ? 0 : dolor)
-    : [];
-}
-
-function adipiscing(...elit) {
-  if (!elit.sit) {
-    return [];
-  }
-
-  const sed = elit[0];
-  return eiusmod.tempor(sed) ? sed : [sed];
-}
-
-function incididunt(ipsum, ut = 1) {
-  ut = labore.et(amet(ut), 0);
-  const sit = ipsum == null ? 0 : ipsum.sit;
-
-  if (!sit || ut < 1) {
-    return [];
-  }
-
-  let dolore = 0;
-  let magna = 0;
-  const aliqua = new eiusmod(labore.ut(sit / ut));
-
-  while (dolore < sit) {
-    aliqua[magna++] = consectetur(
-      ipsum,
-      dolore,
-      (dolore += ut)
-    );
-  }
-
-  return aliqua;
+```ts
+enum COLORS {
+  RED = 10, // 10
+  BLUE, // 11
+  GREEN, // 12
 }
 ```
 
-```diff 1[10:14],2[15:19],3[22:27],10:12
+```ts
+enum COLORS {
+  RED = "RED",
+  BLUE = "BLUE",
+  GREEN = "GREEN",
+}
+```
+
+```ts
+// Doesn't work
+enum COLORS {
+  RED,
+  BLUE = "BLUE",
+  GREEN,
+}
+```
+
+```ts
+// Works
+enum COLORS {
+  RED, // 0
+  GREEN, // 1
+  BLUE = "BLUE",
+}
+```
+
+</CodeSurfer>
+
+---
+
+### #Type restriction
+
+---
+
+<CodeSurfer>
+
+```ts
+enum COLORS {
+  RED = "RED",
+  BLUE = "BLUE",
+  GREEN = "GREEN",
+}
+
+// "RED" | "BLUE" | "GREEN"
+functon useColor(color: COLORS) {
+  console.log(color)
+}
+
+useColor(COLORS.BLUE) // works
+useColor("BLUE")      // doesn't work
+```
+
+</CodeSurfer>
+
+---
+
+### Using object as const
+
+---
+
+<CodeSurfer>
+
+```ts
+const COLORS = {
+  RED: "red",
+  BLUE: "blue",
+  GREEN: "green",
+} as const;
+
+type TCOLORS = typeof COLORS[keyof typeof COLORS];
+//    ^?   "red" | "blue" | "green"
+
+function useColor(color: TCOLORS) {
+  console.log(color);
+}
+
+useColor(COLORS.BLUE); //works
+useColor("blue"); //works
+```
+
+```ts
+const COLORS = {
+  RED: "red",
+  BLUE: "blue",
+  GREEN: "green",
+} as const;
+
+type ObjectValues<T> = T[keyof T];
+type TCOLORS = ObjectValues<typeof COLORS>;
+//    ^?   "red" | "blue" | "green"
+
+function useColor(color: TCOLORS) {
+  console.log(color);
+}
+
+useColor(COLORS.BLUE); //works
+useColor("blue"); //works
+```
+
+</CodeSurfer>
+
+---
+
+## Summary: You might not need Enum
+
+- 💣 mixing usages of enum
+- 💣 restriction of enum as type
+- 🔮 Enum can be fully replaced by object as const
+
+---
+
+## Tips 2: Type guards 💂‍♂️
+
+**`is`**
+
+---
+
+<CodeSurfer>
+
+```ts subtitle="Common problem: (T | undefined)[]"
+const nullableNums = [1, 2, 3, undefined];
+//       ^?    (number | undefined)[]
+
+const nums = nullableNums.filter(
+  (num) => num !== undefined
+); // nums =  [1,2,3]
+//     ^?
+// const nums: (number | undefined)[]
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurfer>
+
+```ts
+function isNumber(x: number | undefined): x is number {
+  return x !== undefined && typeof x === "number";
+}
+
+const nullableNums = [1, 2, 3, undefined];
+const nums = nullableNums.filter(isNumber);
+//     ^?
+//    number[]
+```
+
+```diff 1[18:53]
+
+```
+
+```diff 2
+
+```
+
+```diff 6:8
 
 ```
 
@@ -98,12 +204,171 @@ function incididunt(ipsum, ut = 1) {
 
 ---
 
+<CodeSurfer>
+
+```ts subtitle="Example"
+interface CarLike {
+  make: string;
+  model: string;
+  year: number;
+}
+
+function isCarLike(
+  maybeCar: any // should be flexable
+): maybeCar is CarLike {
+  // should be strict
+  return (
+    maybeCar &&
+    typeof maybeCar === "object" &&
+    "make" in maybeCar &&
+    typeof maybeCar["make"] === "string" &&
+    "model" in maybeCar &&
+    typeof maybeCar["model"] === "string" &&
+    "year" in maybeCar &&
+    typeof maybeCar["year"] === "number"
+  );
+}
+
+let maybeCar: unknown;
+// using the guard
+if (isCarLike(maybeCar)) {
+  maybeCar; // CarLike
+}
+```
+
+```diff 1:5
+
+```
+
+```diff 7:9
+
+```
+
+```diff 10:20
+
+```
+
+```diff 25:26
+
+```
+
+</CodeSurfer>
+
+---
+
+## Tips 3: Type assertion 📋
+
+**`asserts x is T`**
+
+---
+
+<CodeSurfer>
+
+```ts
+function buyCar(car: CarLike | undefined) {
+  if (!isCarLike(car)) {
+    throw new Error("Not a CarLike type");
+  }
+
+  requestBuyCar(car);
+}
+```
+
+```ts
+function buyCar(car: CarLike | undefined) {
+  assertsCarLike(car); // will throw if assertion failed
+  requestBuyCar(car);
+}
+```
+
+```ts
+function assertsCarLike(
+  maybeCar: any
+): asserts maybeCar is CarLike {
+  if (
+    !(
+      maybeCar &&
+      typeof maybeCar === "object" &&
+      "make" in maybeCar &&
+      typeof maybeCar["make"] === "string" &&
+      "model" in maybeCar &&
+      typeof maybeCar["model"] === "string" &&
+      "year" in maybeCar &&
+      typeof maybeCar["year"] === "number"
+    )
+  ) {
+    throw new Error(
+      `Value does not appear to be a CarLike ${maybeCar}`
+    );
+  }
+}
+
+function buyCar(car: CarLike | undefined) {
+  assertsCarLike(car); // will throw if assertion failed
+  //             ^?  CarLike | undefined
+  requestBuyCar(car);
+  //            ^?   CarLike
+}
+```
+
+```diff 1:3
+
+```
+
+```diff 3[4:10,21:22]
+
+```
+
+```diff 4:14
+
+```
+
+```diff 16:18
+
+```
+
+```diff 23:26
+
+```
+
+</CodeSurfer>
+
+---
+
+### Summary `is` & `asserts`
+
+- **`is`**: type guard to narrowing the types
+
+- **`asserts x is T`**: narrowing the types + throw error
+
+---
+
+## Tips 3: Mocking 🤖
+
+---
+
+<CodeSurfer>
+
+```ts
+EndpointConnection;
+
+Environment;
+
+BroadcastChannel;
+```
+
+</CodeSurfer>
+
+---
+
+## Other
+
 <CodeSurferColumns themes={[vsDark, github]}>
 
 <Step>
 
 ```js
-const magna = aliqua => aliqua.ut((enim, ad) => enim, 0);
+const magna = (aliqua) => aliqua.ut((enim, ad) => enim, 0);
 ```
 
 ```js
@@ -125,7 +390,7 @@ const lorem = (ipsum, dolor, sit) => {
   );
 };
 
-const magna = aliqua => aliqua.ut((enim, ad) => enim, 0);
+const magna = (aliqua) => aliqua.ut((enim, ad) => enim, 0);
 ```
 
 ```js

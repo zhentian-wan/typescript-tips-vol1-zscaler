@@ -349,7 +349,8 @@ function buyCar(car: CarLike | undefined) {
 
 <CodeSurfer>
 
-```ts
+```ts subtitle="Common problem: create mock with partial data"
+// We just want to mock one / two props, not the whole object
 EndpointConnection;
 
 Environment;
@@ -361,7 +362,81 @@ BroadcastChannel;
 
 ---
 
-## Other
+<CodeSurfer>
+
+```ts
+// apps/cbi-client/tests/test-utils.ts
+export function createMock<T>(mock: DeepPartial<T>): T {
+  return mock as T;
+}
+
+export function createMockEndpoint(
+  mock?: DeepPartial<EndpointConnection>
+) {
+  return createMock<EndpointConnection>({
+    sendEncodedMessage: jest.fn(), // add often used pops here
+    ...(mock ?? {}), // add new if necessary
+  });
+}
+```
+
+```ts
+beforeEach(() => {
+  endpointContextSpy = createMockEndpoint();
+});
+
+expect(
+  endpointContextSpy.sendEncodedMessage
+).toHaveBeenCalledWith(
+  expect.objectContaining({
+    subtype: "open",
+    type: "navigation",
+  })
+);
+```
+
+```ts
+beforeEach(() => {
+  // add more mocks
+  endpointContextSpy = createMockEndpoint({
+    post: jest.fn(),
+  });
+});
+
+expect(endpointContextSpy.post).toHaveBeenCalledWith(
+  expect.toHaveBeenCalledTimes(1)
+);
+expect(
+  endpointContextSpy.sendEncodedMessage
+).toHaveBeenCalledWith(expect.toHaveBeenCalledTimes(1));
+```
+
+</CodeSurfer>
+
+---
+
+### as unknown as EndpointConnection
+
+---
+
+## Summary
+
+- 💡 Create partial mock object
+- 💡 Type safe and autocompletion
+
+---
+
+## Type Untitles
+
+[Utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html)
+
+- Omit
+- Pick
+- Partial
+- Exclude
+- Extract
+
+---
 
 <CodeSurferColumns themes={[vsDark, github]}>
 

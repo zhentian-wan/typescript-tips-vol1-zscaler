@@ -13,146 +13,16 @@ Zhentian Wan @ Zscaler
 
 ---
 
-## Tip 1: You might not need Enum
+## Content
 
-[You may not need an enum when an object with as const could suffice](https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums)
-
----
-
-### #Enum usage is not predictable
-
----
-
-<CodeSurfer>
-
-```ts
-enum COLORS {
-  RED, // 0
-  BLUE, // 1
-  GREEN, // 2
-}
-```
-
-```ts
-enum COLORS {
-  RED = 10, // 10
-  BLUE, // 11
-  GREEN, // 12
-}
-```
-
-```ts
-enum COLORS {
-  RED = "RED",
-  BLUE = "BLUE",
-  GREEN = "GREEN",
-}
-```
-
-```ts
-// Doesn't work
-enum COLORS {
-  RED,
-  BLUE = "BLUE",
-  GREEN,
-}
-```
-
-```ts
-// Works
-enum COLORS {
-  RED, // 0
-  GREEN, // 1
-  BLUE = "BLUE",
-}
-```
-
-</CodeSurfer>
+- Type guards
+- Type assertion
+- Mocking
+- Enum vs Object
 
 ---
 
-### #Type restriction
-
----
-
-<CodeSurfer>
-
-```ts
-enum COLORS {
-  RED = "RED",
-  BLUE = "BLUE",
-  GREEN = "GREEN",
-}
-
-// "RED" | "BLUE" | "GREEN"
-functon useColor(color: COLORS) {
-  console.log(color)
-}
-
-useColor(COLORS.BLUE) // works
-useColor("BLUE")      // doesn't work
-```
-
-</CodeSurfer>
-
----
-
-### Using object as const
-
----
-
-<CodeSurfer>
-
-```ts
-const COLORS = {
-  RED: "red",
-  BLUE: "blue",
-  GREEN: "green",
-} as const;
-
-type TCOLORS = typeof COLORS[keyof typeof COLORS];
-//    ^?   "red" | "blue" | "green"
-
-function useColor(color: TCOLORS) {
-  console.log(color);
-}
-
-useColor(COLORS.BLUE); //works
-useColor("blue"); //works
-```
-
-```ts
-const COLORS = {
-  RED: "red",
-  BLUE: "blue",
-  GREEN: "green",
-} as const;
-
-type ObjectValues<T> = T[keyof T];
-type TCOLORS = ObjectValues<typeof COLORS>;
-//    ^?   "red" | "blue" | "green"
-
-function useColor(color: TCOLORS) {
-  console.log(color);
-}
-
-useColor(COLORS.BLUE); //works
-useColor("blue"); //works
-```
-
-</CodeSurfer>
-
----
-
-## Summary: You might not need Enum
-
-- 💣 mixing usages of enum
-- 💣 restriction of enum as type
-- 🔮 Enum can be fully replaced by object as const
-
----
-
-## Tips 2: Type guards 💂‍♂️
+## Tips 1: Type guards 💂‍♂️
 
 **`is`**
 
@@ -256,7 +126,15 @@ if (isCarLike(maybeCar)) {
 
 ---
 
-## Tips 3: Type assertion 📋
+### Summary: Type guards
+
+- Type gurads can help narrow down the types
+- Using `is` keyword
+- Type check in function body should be strict enough
+
+---
+
+## Tips 2: Type assertion 📋
 
 **`asserts x is T`**
 
@@ -426,67 +304,193 @@ expect(
 
 ---
 
-## Type Untitles
+## Tip 4: You might not need Enum
 
-[Utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html)
-
-- Omit
-- Pick
-- Partial
-- Exclude
-- Extract
+[You may not need an enum when an object with as const could suffice](https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums)
 
 ---
 
-<CodeSurferColumns themes={[vsDark, github]}>
-
-<Step>
-
-```js
-const magna = (aliqua) => aliqua.ut((enim, ad) => enim, 0);
-```
-
-```js
-const minim = (ad, enim) => dolore.magna(ad / enim);
-```
-
-</Step>
-
-<Step>
-
-```js
-const lorem = (ipsum, dolor, sit) => {
-  const amet = dolor - ipsum;
-  return consectetur.adipiscing(
-    {
-      elit: sed.eiusmod(sit - dolor) / amet + 2,
-    },
-    (tempor, incididunt) => ipsum + amet * incididunt
-  );
-};
-
-const magna = (aliqua) => aliqua.ut((enim, ad) => enim, 0);
-```
-
-```js
-const minim = (ad, enim) => dolore.magna(ad / enim);
-
-const sed = (eiusmod, tempor, incididunt) => {
-  const ut = tempor - eiusmod;
-  return labore.et(
-    {
-      amet: dolore.magna(incididunt - tempor) / ut + 2,
-    },
-    (aliqua, elit) => eiusmod + ut * elit
-  );
-};
-```
-
-</Step>
-
-</CodeSurferColumns>
+### #Enum usage is not predictable
 
 ---
 
-docs:  
-[codesurfer.pomb.us](https://codesurfer.pomb.us)
+<CodeSurfer>
+
+```ts
+enum COLORS {
+  RED, // 0
+  BLUE, // 1
+  GREEN, // 2
+}
+```
+
+```ts
+enum COLORS {
+  RED = 10, // 10
+  BLUE, // 11
+  GREEN, // 12
+}
+```
+
+```ts
+enum COLORS {
+  RED = "red",
+  BLUE = "blue",
+  GREEN = "green",
+}
+```
+
+```ts
+// Works
+enum COLORS {
+  RED, // 0
+  BLUE, // 1
+  GREEN = "green",
+}
+```
+
+```ts
+// Doesn't work
+enum COLORS {
+  RED,
+  BLUE = "blue",
+  GREEN,
+}
+```
+
+</CodeSurfer>
+
+---
+
+### #Type restriction
+
+---
+
+<CodeSurfer>
+
+```ts
+enum COLORS {
+  RED = "red",
+  BLUE = "blue",
+  GREEN = "green",
+}
+
+// "red" | "blue" | "green"
+functon useColor(color: COLORS) {
+  console.log(color)
+}
+
+useColor(COLORS.BLUE) // works
+useColor("blue")      // doesn't work
+```
+
+</CodeSurfer>
+
+---
+
+### Using object as const
+
+---
+
+<CodeSurfer>
+
+```ts
+const COLORS = {
+  RED: "red",
+  BLUE: "blue",
+  GREEN: "green",
+} as const;
+
+type TCOLORS = "red" | "blue" | "green";
+
+function useColor(color: TCOLORS) {
+  console.log(color);
+}
+
+useColor(COLORS.BLUE);
+useColor("blue");
+```
+
+```diff 7
+
+```
+
+</CodeSurfer>
+
+---
+
+#### Principal: infer the types as much as possible
+
+---
+
+<CodeSurfer>
+
+```ts
+const COLORS = {
+  RED: "red",
+  BLUE: "blue",
+  GREEN: "green",
+} as const;
+
+type TCOLORS = typeof COLORS[keyof typeof COLORS];
+
+function useColor(color: TCOLORS) {
+  console.log(color);
+}
+
+useColor(COLORS.BLUE); //works
+useColor("blue"); //works
+```
+
+```diff 7
+
+```
+
+</CodeSurfer>
+
+---
+
+#### Think about generics type
+
+---
+
+<CodeSurfer>
+
+```ts
+const COLORS = {
+  RED: "red",
+  BLUE: "blue",
+  GREEN: "green",
+} as const;
+
+type ObjectValues<T extends Record<PropertyKey, any>> =
+  T[keyof T];
+type TCOLORS = ObjectValues<typeof COLORS>;
+
+function useColor(color: TCOLORS) {
+  console.log(color);
+}
+
+useColor(COLORS.BLUE); //works
+useColor("blue"); //works
+```
+
+```diff 7:9
+
+```
+
+</CodeSurfer>
+
+---
+
+## Summary: You might not need Enum
+
+- 💣 mixing usages of enum
+- 💣 restriction of enum as type
+- 🔮 Enum can be fully replaced by object as const
+- 🔮 Principal: infer the types as much as possible
+- 🔮 Think about generics type, make type utilities
+
+---
+
+# Questions?

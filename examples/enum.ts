@@ -24,19 +24,19 @@
 // }
 
 // Works
-enum COLORS {
+enum COLORA {
   RED, // 0
   GREEN, // 1
   BLUE = "BLUE",
 }
 
-function useColor(color: COLORS) {
+function useColora(color: COLORA) {
   console.log(color);
 }
 
-useColor(COLORS.BLUE); // works
+useColora(COLORA.BLUE); // works
 // @ts-expect-error
-useColor("BLUE"); // doesn't work
+useColora("BLUE"); // doesn't work
 
 /*
 export const SharedHealth = {

@@ -4,9 +4,7 @@ const COLORS = {
   GREEN: "green",
 } as const;
 
-type x = typeof COLORS;
-type y = keyof typeof COLORS;
-type TCOLORS = typeof COLORS[keyof typeof COLORS];
+type TCOLORS = "red" | "blue" | "green";
 
 function useColor(color: TCOLORS) {
   console.log(color);
@@ -15,6 +13,7 @@ function useColor(color: TCOLORS) {
 useColor(COLORS.BLUE); //works
 useColor("blue"); //works
 
+/*
 export const MIME_TYPES = {
   jpg: "image/jpg",
   png: "image/png",
@@ -32,3 +31,4 @@ export type AllowedImageMimeTypes =
   typeof ALLOWED_IMAGE_MMIME_TYPES[number];
 
 export type ObjectValues<T> = T[keyof T];
+*/

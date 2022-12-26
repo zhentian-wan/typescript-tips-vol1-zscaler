@@ -494,3 +494,101 @@ useColor("blue"); //works
 ---
 
 # Questions?
+
+---
+
+# Typescript tips Vol.2 💡
+
+Zhentian Wan @ Zscaler
+
+---
+
+## Branded Type
+
+---
+
+<CodeSurfer>
+
+```ts subtitle="problem"
+export type UUID = string;
+// can give any string value
+// but we expect uid to be 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+const uid: UUID = "abc";
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurfer>
+
+```ts subtitle="define a branded type"
+declare const brand: unique symbol;
+type Brand<K, T> = T & { [brand]: K };
+```
+
+```ts subtitle="use a branded type"
+type UUID = Brand<"UUID", string>;
+/*
+string & {
+  brand: 'USD'
+}
+*/
+const uid: UUID = "abc"; // doesn't work, 'abc' is not assignable to UUID
+```
+
+</CodeSurfer>
+
+---
+
+#### Using branded type with type guards/assertion
+
+---
+
+<CodeSurfer>
+
+```ts
+function isValidateUUID(x: string): boolean {
+  return (
+    typeof x === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      x
+    )
+  );
+}
+// type guard
+function isUUID(x: string | UUID): x is UUID {
+  return isValidateUUID(x);
+}
+// type assertion
+function assertsUUID(x: string | UUID): asserts x is UUID {
+  if (!isValidateUUID(x)) {
+    throw new Error("Not a validate UUID");
+  }
+}
+```
+
+```ts
+function isValidateUUID(x: string): boolean {
+  return (
+    typeof x === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      x
+    )
+  );
+}
+// type guard
+function isUUID(x: string | UUID): x is UUID {
+  return isValidateUUID(x);
+}
+// type assertion
+function assertsUUID(x: string | UUID): asserts x is UUID {
+  if (!isValidateUUID(x)) {
+    throw new Error("Not a validate UUID");
+  }
+}
+```
+
+</CodeSurfer>
+
+---

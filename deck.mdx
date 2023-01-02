@@ -592,3 +592,50 @@ function assertsUUID(x: string | UUID): asserts x is UUID {
 </CodeSurfer>
 
 ---
+
+## Generic parameters for function
+
+---
+
+<CodeSurfer>
+
+```ts
+const handleHistoryPerUid = distinctUntilChanged(
+  handleHistory,
+  (prev, curr) => prev?.attributes?.uid === curr.attributes.uid,
+)
+
+handleHistoryPerUid(message)
+```
+
+</CodeSurfer>
+
+---
+
+
+<CodeSurfer>
+
+```ts
+export function distinctUntilChanged<TData>(
+  fn: (val: TData) => void,
+  compareFn?: (prev: TData | undefined, curr: TData) => boolean,
+) {
+  let prev: TValue<TData> | undefined
+  return (value: TData): void => {
+    if (prev === undefined || (!Object.is(value, prev) && !compareFn)) {
+      fn(value)
+      prev = value
+    }
+    if (compareFn && typeof compareFn === 'function' && !compareFn(prev, value)) {
+      fn(value)
+      prev = value
+    }
+  }
+}
+```
+
+</CodeSurfer>
+
+---
+
+More about sendEncodedMessage example

@@ -11,4 +11,4 @@
 
 - Function scope
 - Branded type
-- Generic parameters for
+- Generic parameters for function

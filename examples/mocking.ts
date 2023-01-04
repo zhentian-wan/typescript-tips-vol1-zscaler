@@ -57,7 +57,7 @@ export function createMockChannel(
 }
 
 const v1 = {
-  postMessage: () => {},
+  postMessage2: () => {},
 } as unknown as BroadcastChannel;
 
 const v2 = createMockChannel({

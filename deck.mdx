@@ -493,6 +493,35 @@ useColor("blue"); //works
 
 ---
 
+### Tips 5: Function scope
+
+---
+
+<CodeSurfer>
+
+```ts subtitle="problem of function scope"
+async function main() {
+  let result: string | undefined;
+  result = await fetchData();
+  if (!result) {
+    return;
+  }
+  // doesn't work
+  // Type 'string | undefined' is not assignable to type 'string'.
+  setState((state) => ({ ...state, ui: result }));
+}
+
+function setState(
+  fn: (oldState: { ui: string }) => { ui: string }
+) {}
+
+declare function fetchData(): Promise<string | undefined>;
+```
+
+</CodeSurfer>
+
+---
+
 # Questions?
 
 ---

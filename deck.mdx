@@ -493,6 +493,16 @@ useColor("blue"); //works
 
 ---
 
+# Questions?
+
+---
+
+# Typescript tips Vol.2 💡
+
+Zhentian Wan @ Zscaler
+
+---
+
 ### Tips 5: Function scope
 
 ---
@@ -500,6 +510,12 @@ useColor("blue"); //works
 <CodeSurfer>
 
 ```ts subtitle="problem of function scope"
+function setState(
+  fn: (oldState: { ui: string }) => { ui: string }
+) {}
+
+declare function fetchData(): Promise<string | undefined>;
+
 async function main() {
   let result: string | undefined;
   result = await fetchData();
@@ -510,25 +526,33 @@ async function main() {
   // Type 'string | undefined' is not assignable to type 'string'.
   setState((state) => ({ ...state, ui: result }));
 }
+```
 
-function setState(
-  fn: (oldState: { ui: string }) => { ui: string }
-) {}
+```ts subtitle="handle in main() scope"
+async function main() {
+  let result: string | undefined;
+  result = await fetchData();
+  if (!result) {
+    return;
+  }
+  const ui = result;
+  //    ^?    string
+  setState((state) => ({ ...state, ui }));
+}
+```
 
-declare function fetchData(): Promise<string | undefined>;
+```ts subtitle="handle in setState() scope"
+async function main() {
+  let result: string | undefined;
+  result = await fetchData();
+
+  setState((state) => {
+    return result ? { ...state, ui: result } : state;
+  });
+}
 ```
 
 </CodeSurfer>
-
----
-
-# Questions?
-
----
-
-# Typescript tips Vol.2 💡
-
-Zhentian Wan @ Zscaler
 
 ---
 
@@ -631,35 +655,45 @@ function assertsUUID(x: string | UUID): asserts x is UUID {
 ```ts
 const handleHistoryPerUid = distinctUntilChanged(
   handleHistory,
-  (prev, curr) => prev?.attributes?.uid === curr.attributes.uid,
-)
+  (prev, curr) =>
+    prev?.attributes?.uid === curr.attributes.uid
+);
 
-handleHistoryPerUid(message)
+handleHistoryPerUid(message);
 ```
 
 </CodeSurfer>
 
 ---
 
-
 <CodeSurfer>
 
 ```ts
 export function distinctUntilChanged<TData>(
   fn: (val: TData) => void,
-  compareFn?: (prev: TData | undefined, curr: TData) => boolean,
+  compareFn?: (
+    prev: TData | undefined,
+    curr: TData
+  ) => boolean
 ) {
-  let prev: TValue<TData> | undefined
+  let prev: TValue<TData> | undefined;
   return (value: TData): void => {
-    if (prev === undefined || (!Object.is(value, prev) && !compareFn)) {
-      fn(value)
-      prev = value
+    if (
+      prev === undefined ||
+      (!Object.is(value, prev) && !compareFn)
+    ) {
+      fn(value);
+      prev = value;
     }
-    if (compareFn && typeof compareFn === 'function' && !compareFn(prev, value)) {
-      fn(value)
-      prev = value
+    if (
+      compareFn &&
+      typeof compareFn === "function" &&
+      !compareFn(prev, value)
+    ) {
+      fn(value);
+      prev = value;
     }
-  }
+  };
 }
 ```
 
@@ -667,4 +701,16 @@ export function distinctUntilChanged<TData>(
 
 ---
 
-More about sendEncodedMessage example
+<CodeSurfer>
+
+```ts subtitle="Using custom type"
+function sendEncodeMessage<
+  Type extends Message["type"],
+  Sub extends GetMessageSubtypes<Type>,
+  Msg extends GetMessage<Type, Sub>
+>(type: Type, subtype: Sub, msg: Msg) {}
+
+sendEncodeMessage("print", "start", printStart);
+```
+
+</CodeSurfer>

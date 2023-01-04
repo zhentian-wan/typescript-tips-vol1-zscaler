@@ -1,23 +1,14 @@
-# MDX Deck + Code Surfer template
+# Typescript tips
 
-This project was generated with the `npm init code-surfer-deck` command.
+### Vol. 1
 
-## Development
+- Type guards
+- Type assertion
+- Mocking
+- Enum vs Object as const
 
-To run the presentation deck in development mode:
+### Vol. 2
 
-```sh
-npm start
-```
-
-Edit the [`deck.mdx`](deck.mdx) file to get started.
-
-## Exporting
-
-To build the presentation deck:
-
-```sh
-npm run build
-```
-
-For more documentation see [MDX Deck](https://github.com/jxnblk/mdx-deck) and [Code Surfer](https://codesurfer.pomb.us/)
+- Function scope
+- Branded type
+- Generic parameters for

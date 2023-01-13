@@ -11,4 +11,5 @@
 
 - Function scope
 - Branded type
+  - Force validation before use
 - Generic parameters for function

@@ -506,6 +506,7 @@ Zhentian Wan @ Zscaler
 ## Content
 
 - Function scope
+- Type fetch request
 - Branded type
 
 ---
@@ -653,7 +654,88 @@ function assertsUUID(x: string | UUID): asserts x is UUID {
 
 ---
 
+### Branded type: force validation before use
+
+---
+
+More content here
+
+---
+
 ## Generic parameters for function
+
+---
+
+<CodeSurfer>
+
+```ts
+const fetchData = async (url: string) => {
+  const data = await fetch(url).then((response) =>
+    response.json()
+  );
+  return data;
+};
+const data = await fetchData(
+  "https://swapi.dev/api/people/1"
+);
+// data: any
+```
+
+```ts
+const fetchData = async (url: string) => {
+  const data = await fetch(url).then((response) =>
+    response.json()
+  );
+  return data;
+};
+const data = await fetchData<{ name: string }>(
+  "https://swapi.dev/api/people/1"
+);
+// data: any
+```
+
+```ts subtitle="define function return type"
+const fetchData = async <T>(url: string): Promise<T> => {
+  const data = await fetch(url).then((response) =>
+    response.json()
+  );
+  return data;
+};
+const data = await fetchData<{ name: string }>(
+  "https://swapi.dev/api/people/1"
+);
+// data: any
+```
+
+```ts subtitle="define function return type"
+const fetchData = async <T>(url: string): Promise<T> => {
+  const data = await fetch(url).then((response) =>
+    //    ^? data: any
+    response.json()
+  );
+  return data;
+};
+const data = await fetchData<{ name: string }>(
+  "https://swapi.dev/api/people/1"
+);
+// data: {name: string}
+```
+
+```ts subtitle="let function infer the return type"
+const fetchData = async <T>(url: string) => {
+  const data: T = await fetch(url).then((response: T) =>
+    //    ^? data: T   move type defintion close to the assignment
+    response.json()
+  );
+  return data;
+};
+const data = await fetchData<{ name: string }>(
+  "https://swapi.dev/api/people/1"
+);
+// data: {name: string}
+```
+
+</CodeSurfer>
 
 ---
 
@@ -683,7 +765,7 @@ export function distinctUntilChanged<TData>(
     curr: TData
   ) => boolean
 ) {
-  let prev: TValue<TData> | undefined;
+  let prev: TData | undefined;
   return (value: TData): void => {
     if (
       prev === undefined ||

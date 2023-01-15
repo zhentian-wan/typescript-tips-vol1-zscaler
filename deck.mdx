@@ -805,6 +805,83 @@ sendEncodeMessage("print", "start", printStart);
 </CodeSurfer>
 
 ---
+
+## Testing types
+
+---
+<CodeSurfer>
+
+```ts
+describe('composer', () => {
+  test('getBuilders(): should generate utils function', () => {
+    const builders = getBuilders(chat.TYPE, chat.allSubtypes)
+    const { buildConnected, buildConnectedClient } = builders
+
+    const res = buildConnected({ controlsId: mockControlsId, component: 'endpoint' })
+    const expected = {
+      type: 'chat',
+      subtype: 'connected',
+      attributes: {
+        controlsId: mockControlsId,
+        component: 'endpoint',
+      },
+    }
+    expect(res).toEqual(expected)
+
+    const res2 = buildConnectedClient({ controlsId: mockControlsId, component: 'endpoint' }, { target: 'client' })
+    const expected2 = {
+      type: 'chat',
+      subtype: 'connectedClient',
+      target: 'client',
+      attributes: {
+        controlsId: mockControlsId,
+        component: 'endpoint',
+      },
+    }
+    expect(res2).toEqual(expected2)
+  })
+})
+```
+```ts
+describe('composer', () => {
+  test('getBuilders(): should generate utils function', () => {
+    const builders = getBuilders(chat.TYPE, chat.allSubtypes)
+    const { buildConnected, buildConnectedClient } = builders
+
+    const res = buildConnected({ controlsId: mockControlsId, component: 'endpoint' })
+    const expected = {
+      type: 'chat',
+      subtype: 'connected',
+      attributes: {
+        controlsId: mockControlsId,
+        component: 'endpoint',
+      },
+    }
+    expect(res).toEqual(expected)
+
+    const res2 = buildConnectedClient({ controlsId: mockControlsId, component: 'endpoint' }, { target: 'client' })
+    const expected2 = {
+      type: 'chat',
+      subtype: 'connectedClient',
+      target: 'client',
+      attributes: {
+        controlsId: mockControlsId,
+        component: 'endpoint',
+      },
+    }
+    expect(res2).toEqual(expected2)
+
+    type Tests = [
+      Expect<Equal<ReturnType<typeof buildConnected>, ChatConnected>>,
+      Expect<Equal<ReturnType<typeof buildConnectedClient>, ChatIsolationConnected>>,
+    ]
+  })
+})
+```
+
+</CodeSurfer>
+
+---
   
 # Typescript Tips Vol. 3
   

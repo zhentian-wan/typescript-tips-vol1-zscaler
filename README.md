@@ -13,3 +13,9 @@
 - Branded type
   - Force validation before use
 - Generic parameters for function
+- Testing types
+
+
+### Vol. 3
+
+- Build dynamic types

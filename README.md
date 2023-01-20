@@ -11,7 +11,7 @@
 
 - Function scope
 - Branded type
-  - Force validation before use
+  - Force validation on Type level
 - Generic parameters for function
 
 
